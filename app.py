@@ -1,12 +1,21 @@
 import streamlit as st
 from transformers import pipeline
-from huggingface_hub import InferenceClient  # Official client for stability
+from huggingface_hub import InferenceClient
 from PIL import Image
 import io
 
 # ================= 1. Configuration =================
 
-HF_API_TOKEN = "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" 
+# Setup Page Config (Optional, makes it look nicer)
+st.set_page_config(page_title="AI Mood-to-Image", page_icon="🎨")
+
+# 🔐 SECURITY: Retrieve Token from Streamlit Secrets
+# This prevents the token from being exposed and invalidated by GitHub
+try:
+    HF_API_TOKEN = st.secrets["HF_TOKEN"]
+except Exception:
+    st.error("⚠️ Token not found! Please set 'HF_TOKEN' in Streamlit Cloud Secrets.")
+    st.stop()
 
 # Model ID for Image Generation
 MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
@@ -14,22 +23,20 @@ MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
 # ================= 2. Model Loading & Functions =================
 
 # A. Load Sentiment Analysis Model
+# Caching prevents reloading the model on every interaction
 @st.cache_resource
 def load_sentiment_pipeline():
-    # Downloads the model once and caches it
     return pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-sentiment-latest")
 
 # B. Load Image Captioning Model
 @st.cache_resource
 def load_caption_pipeline():
-    # Converts uploaded images to text description
     return pipeline("image-to-text", model="Salesforce/blip-image-captioning-base")
 
 # C. Generate Image Function (Using Official InferenceClient)
 def generate_image(prompt_text):
     """
     Generates an image based on the text prompt using Hugging Face Inference API.
-    Handles the connection and URL routing automatically.
     """
     client = InferenceClient(token=HF_API_TOKEN)
     try:
@@ -37,7 +44,6 @@ def generate_image(prompt_text):
         image = client.text_to_image(prompt_text, model=MODEL_ID)
         return image
     except Exception as e:
-        # Return the error message if something goes wrong
         return f"Error: {e}"
 
 # ================= 3. UI Layout (Streamlit) =================
@@ -54,9 +60,9 @@ with st.sidebar:
     st.caption("2. Generation: `stabilityai/sdxl-base-1.0`")
     st.caption("3. Captioning: `Salesforce/blip-captioning`")
     
-    # Simple Token Check
-    if HF_API_TOKEN.startswith("hf_") is False:
-        st.error("⚠️ Invalid Token format. Please check line 10 in app.py")
+    # Token Status Check (Hidden partial token for safety)
+    if HF_API_TOKEN:
+        st.success("✅ HF Token Loaded")
 
 # --- Input Method Selection ---
 input_method = st.radio("Choose Input Method:", ["📝 Text Input", "🖼️ Upload Image"])
@@ -76,7 +82,9 @@ elif input_method == "🖼️ Upload Image":
         # Perform Image Captioning
         with st.spinner('AI is analyzing the image content...'):
             caption_pipe = load_caption_pipeline()
-            caption_result = caption_pipe(image)[0]['generated_text']
+            # Handle potential list or dict return
+            caption_output = caption_pipe(image)
+            caption_result = caption_output[0]['generated_text']
             st.success(f"AI Detected Content: '{caption_result}'")
             final_text_input = caption_result
 
@@ -84,8 +92,6 @@ elif input_method == "🖼️ Upload Image":
 if st.button("Analyze & Generate"):
     if not final_text_input:
         st.warning("Please input text or upload an image first.")
-    elif not HF_API_TOKEN.startswith("hf_"):
-        st.error("❌ Configuration Error: Please update the HF_API_TOKEN in the code.")
     else:
         # 1. Sentiment Analysis
         st.divider()
