@@ -6,7 +6,7 @@ import io
 
 # ================= 1. Configuration =================
 
-HF_API_TOKEN = "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" 
+HF_API_TOKEN = "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" 
 
 # Model ID for Image Generation
 MODEL_ID = "stabilityai/stable-diffusion-xl-base-1.0"
