@@ -6,7 +6,7 @@ import io
 
 # ================= 1. Configuration =================
 
-# ⚠️ IMPORTANT: Replace the string below with your actual Hugging Face Token (hf_...)
+
 HF_API_TOKEN = "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" 
 
 # Model ID for Image Generation
