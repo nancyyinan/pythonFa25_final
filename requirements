@@ -1,3 +1,7 @@
+streamlit
+transformers
 torch
-transforemers
-torchivision
+torchvision
+huggingface_hub
+Pillow
+tf-keras
