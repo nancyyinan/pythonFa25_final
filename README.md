@@ -74,4 +74,4 @@ The development of this application followed an iterative pipeline approach:
     ```
 
 ---
-*Final Project for Python Class - Fall 2025*
+*Final Project for Python Class - Fall 2025 - Yinan Xue*
