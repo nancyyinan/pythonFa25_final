@@ -3,7 +3,7 @@
 ## Project Overview
 This project is a web-based application built with **Streamlit** that explores the intersection of Natural Language Processing (NLP) and Generative Art. The application analyzes the sentiment of a user's input (text or image) and automatically generates an abstract artistic representation of that emotion using the Stable Diffusion model.
 
-**App Link:** [Click here to view the deployed app](https://pythonfa25final-ulqosjgq8kjttb7nt54885.streamlit.app/) *(Replace with your actual link if different)*
+**App Link:** [Click here to view the deployed app](https://pythonfa25final-ulqosjgq8kjttb7nt54885.streamlit.app/) 
 
 ---
 
